@@ -383,16 +383,11 @@ benchmarks! {
 		let weight_left = Weight::from_ref_time(500_000_000_000);
 		let mut task_ids = vec![];
 		let caller: T::AccountId = account("caller", 0, SEED);
-		let time = 10800;
-		let recipient: T::AccountId = account("to", 0, SEED);
-		let starting_multiplier: u32 = 20;
-		let transfer_amount = T::Currency::minimum_balance().saturating_mul(ED_MULTIPLIER.into());
-		let starting_amount = T::Currency::minimum_balance().saturating_mul(starting_multiplier.into());
-		T::Currency::deposit_creating(&caller, starting_amount.clone().saturating_mul(DEPOSIT_MULTIPLIER.into()));
+		let time1 = 10800;
 
 		for i in 0..v {
 			let provided_id: Vec<u8> = vec![i.saturated_into::<u8>()];
-			let task = TaskOf::<T>::create_native_transfer_task::<T>(caller.clone(), provided_id.clone(), vec![time], recipient.clone(), transfer_amount.clone()).unwrap();
+			let task = TaskOf::<T>::create_event_task::<T>(caller.clone(), provided_id.clone(), vec![time1], vec![65, 65.saturating_add(i as u8)]).unwrap();
 			let task_id = AutomationTime::<T>::schedule_task(&task, provided_id).unwrap();
 			<AccountTasks<T>>::insert(caller.clone(), task_id, task);
 			task_ids.push((caller.clone(), task_id))
